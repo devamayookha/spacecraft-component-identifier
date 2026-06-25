@@ -6,7 +6,7 @@ print("Loading CLIP AI Model... (This may take a minute on the first run)")
 
 # Ensure the model utilizes CPU safely and cleanly without warning flags
 try:
-    detector = pipeline("zero-shot-image-classification", model="openai/clip-vit-base-patch32")
+    detector = pipeline("zero-shot-image-classification", model="openai/clip-vit-base-patch16")
     print("Model loaded successfully!")
 except Exception as e:
     print(f"Error initializing CLIP model: {e}")
