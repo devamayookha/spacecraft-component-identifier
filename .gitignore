@@ -1,0 +1,14 @@
+# Python cached bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environment and storage files
+uploads/
+.DS_Store
+Thumbs.db
+
+# Virtual environments (if you choose to use one later)
+venv/
+.venv/
+env/
