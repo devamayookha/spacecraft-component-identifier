@@ -274,17 +274,14 @@
                     componentList.innerHTML = `<li class="component-item" style="color: var(--text-muted); text-align: center;">No engineering subsystems met the detection threshold.</li>`;
                 } else {
                     for (const [rawName, confidence] of Object.entries(detections)) {
-                        let genericName = rawName.replace("a ", "").replace("or propulsion nozzles", "").replace("or optical sensor", "").trim();
-
-                        // Skip printing the background noise row to keep the UI clean
-                        if (genericName === "background noise") continue;
-                        
-                        // Clean strings using JavaScript standard .trim() method
                         let genericName = rawName
                             .replace("a ", "")
                             .replace("or propulsion nozzles", "")
                             .replace("or optical sensor", "")
                             .trim();
+
+                        // Skip printing the background noise row to keep the UI clean
+                        if (genericName === "background noise") continue;
 
                         const explanation = explanations[genericName] || "Focuses on providing core mission support capabilities.";
 
