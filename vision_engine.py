@@ -1,5 +1,6 @@
 import os
 import time
+import base64
 import requests
 from PIL import Image
 
@@ -27,12 +28,13 @@ def analyze_spacecraft_image(image_path):
         "background noise"
     ]
 
-    # Read the image bits to transmit over the network
+    # Read the image bits and encode them into a JSON-friendly Base64 text string
     with open(image_path, "rb") as f:
         img_bytes = f.read()
+        img_b64 = base64.b64encode(img_bytes).decode("utf-8")
 
     payload = {
-        "inputs": img_bytes,
+        "inputs": img_b64,
         "parameters": {"candidate_labels": CANDIDATE_LABELS}
     }
 
