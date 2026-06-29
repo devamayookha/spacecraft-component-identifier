@@ -3,7 +3,7 @@ from PIL import Image
 from transformers import pipeline
 
 # Load the local model engine
-detector = pipeline("zero-shot-image-classification", model="openai/clip-vit-base-patch32")
+detector = pipeline("zero-shot-image-classification", model="google/mobilenet_v2_1.0_224")
 
 def analyze_spacecraft_image(image_path):
     """
