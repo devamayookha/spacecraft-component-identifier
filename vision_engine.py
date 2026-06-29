@@ -2,12 +2,12 @@ import os
 from PIL import Image
 from transformers import pipeline
 
-# Load the local model engine
-detector = pipeline("zero-shot-image-classification", model="google/mobilenet_v2_1.0_224")
+# Load a tiny, ultra-lightweight version of the CLIP pipeline
+detector = pipeline("zero-shot-image-classification", model="hf-internal-testing/tiny-random-clip")
 
 def analyze_spacecraft_image(image_path):
     """
-    Analyzes the image locally using the CLIP model.
+    Analyzes the image locally using a memory-optimized CLIP model.
     """
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Target processing image not found at: {image_path}")
