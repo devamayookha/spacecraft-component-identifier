@@ -1,16 +1,13 @@
 import os
-import time
-import base64
-import requests
 from PIL import Image
+from transformers import pipeline
 
-# Hugging Face Free Public Inference API endpoint for CLIP
-API_URL = "https://api-inference.huggingface.co/models/openai/clip-vit-base-patch16"
+# Load the local model engine
+detector = pipeline("zero-shot-image-classification", model="openai/clip-vit-base-patch32")
 
 def analyze_spacecraft_image(image_path):
     """
-    Sends the target image to Hugging Face's free inference infrastructure
-    to calculate zero-shot classifications without crashing Render's RAM.
+    Analyzes the image locally using the CLIP model.
     """
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Target processing image not found at: {image_path}")
@@ -19,7 +16,7 @@ def analyze_spacecraft_image(image_path):
     with Image.open(image_path) as img:
         img.convert("RGB").save(image_path)
 
-    # Our exact structural validation labels
+    # Classification labels
     CANDIDATE_LABELS = [
         "solar panels",
         "a parabolic satellite dish antenna",
@@ -28,35 +25,14 @@ def analyze_spacecraft_image(image_path):
         "background noise"
     ]
 
-    # Read the image bits and encode them into a JSON-friendly Base64 text string
-    with open(image_path, "rb") as f:
-        img_bytes = f.read()
-        img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+    # Run local inference
+    result = detector(image_path, candidate_labels=CANDIDATE_LABELS)
 
-    payload = {
-        "inputs": img_b64,
-        "parameters": {"candidate_labels": CANDIDATE_LABELS}
-    }
-
-    # Attempt to query the public API container (handles cold starts safely)
-    for attempt in range(3):
-        response = requests.post(API_URL, json=payload)
-        result = response.json()
-        
-        # If the model is sleeping on Hugging Face, it tells us to wait a few seconds
-        if isinstance(result, dict) and "estimated_time" in result:
-            time.sleep(5)
-            continue
-        break
-
-    if not isinstance(result, list):
-        raise RuntimeError(f"Hugging Face API Error: {result}")
-
-    # Parse predictions exactly how the rest of your app expects them
+    # Parse predictions
     parsed_predictions = {}
-    for prediction in result:
-        confidence_percentage = round(prediction['score'] * 100, 2)
+    for label, score in zip(result['labels'], result['scores']):
+        confidence_percentage = round(score * 100, 2)
         if confidence_percentage >= 15.0:
-            parsed_predictions[prediction['label']] = confidence_percentage
+            parsed_predictions[label] = confidence_percentage
 
     return parsed_predictions
